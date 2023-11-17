@@ -1,0 +1,9 @@
+.mypy_cache
+db.sqlite3
+dev-requirements.in
+dev-requirements.txt
+Dockerfile
+prospector.yaml
+pyproject.toml
+requirements.in
+nginx

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/staticfiles
+    ports:
+      - "1337:80"
+
+  backend:
+    build: .
+    env_file: ./.env
+    expose:
+      - 8000
+    command: develop
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  rabbitmq:
+    image: rabbitmq:alpine
+
+  worker:
+    build: .
+    env_file: ./.env
+    command: worker
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+
+  flower:
+    build: .
+    env_file: ./.env
+    environment:
+      - FLOWER_UNAUTHENTICATED_API=1
+    command: flower
+    ports:
+      - "5555:5555"
+    depends_on:
+      - rabbitmq
+
+volumes:
+
+  static_volume:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "./staticfiles"
+
